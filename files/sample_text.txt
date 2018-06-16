@@ -1,0 +1,8 @@
+The lazy fox runs over the hedge 
+There is no Internet connection
+Try:
+
+Checking the network cables, modem, and router
+Reconnecting to Wi-Fi
+Running Windows Network Diagnostics
+ERR_INTERNET_DISCONNECTED
