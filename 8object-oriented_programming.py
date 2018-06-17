@@ -222,3 +222,112 @@ if (value1.__ge__(value2)):
 # This is good to use when you need a custom rule for your operations on custom object, say perhaps in your iterations you always want to skip every other item or something similar.
 # you only have to overload the __iter__ operation once for that class. Every time you call it this will then happen automatically.
 
+
+#########################################
+# Object Lifecycle / Garbage Collection #
+#########################################
+
+# The lifecycle of an object is made up of it's creation, manipulation and destruction.
+# The first stage of the creation is the definition of the class of which it belongs to.
+# Second stage is instantiation of an instance, when __init__ is called.
+# Memory is then allocated to store the instance. Just before this occurs, the __new__ method of the class is called, this method is very rarely edited.
+# The object is now ready to be used and other code can interact with the object and use its variables.
+# Eventually, it will finish being used and the object can be destroyed.
+
+# Destruction of an object occurs when its reference count reaches zero. Reference count is the number of variables and other elements that refer to an object.
+# In some situations, two (or more) objects can be referred to by each other only, and can therefore be deleted as well.
+# There is a magic method to reduce the number of reference count by one, this magic method is __del__.
+
+# The process of deleting objects when they are no longer needed is called "Garbage Collection".
+# In summary, an object's reference count goes up when it's assigned a new name, or placed in a container (list, tuple or dictionary).
+# The object's reference count decreases when it's deleted with __del__ or when the reference goes out of scope.
+# When an object's reference count reaches zero, Python automatically deletes it by garbage collection
+
+a = 42 # Create an object <42>
+b = a # Increase reference count of <42>
+c = [a] # Increase reference count of <42>
+
+del a # Decrease reference count of <42>
+b = 100 # Decrease reference count of <42>
+c[0] = 1 # Decrease reference count of <42>
+# Python will now garbage collect object <42>
+
+#########################################
+# Data Hiding                           #
+#########################################
+
+# A key part of object-ortiented programming is encapsulation. Many functions and variables into a single easy-to-use object (an instance of a class).
+# A related concept is "data hiding". The details of a class is to be hidden and a clean standard interface is presented for those who wants to use the class.
+# In other programming languages this can be done with private methods and attributes, which have their external access blocked.
+# However, in python there is a different philosophy. It is "we are all consenting adults here", meaning that you should not (and can't) put
+# arbitrary restrictions on accessing parts of a class. Instead, the python developers use discouraging context to shy people away from editing private portions.
+
+# The discouraging context in python is done with single underscores before methods and attributes.
+# This means that no external code should be using these methods or attributes.
+# However, this single underscore is a convention and does not actually stop external code from accessing the method or attribute.
+# The single underscore does however stop the asterisk import from a module to include the (weakly) private variables.
+
+# Define a class called Queue
+class Queue:
+    # Instantiation of the object with the dunder/magic method __init__ that is called upon calling of the class.
+    def __init__(self, contents):
+        # the "contents" argument is stored in the instantiated self-argument. The weakly private method _hiddenlist is defined with a single underscore.
+        self._hiddenlist = list(contents)
+    
+    # Definition of push() function with the weakly private method _hiddenlist. 
+    def push(self, value):
+        # We insert a value at place "0" in the list.
+        self._hiddenlist.insert(0, value)
+    
+    # Definition of pop() function with weakly private method _hiddenlist
+    def pop(self):
+        # We pop(), i.e. take away the value at place "0" in the list
+        return self._hiddenlist.pop(0)
+    
+    # Definition of magic function __repr__. This is a string representation of an instance of our class Queue.
+    def __repr__(self):
+        # We use format to print the _hiddenlist
+        return "Queue({0})".format(self._hiddenlist)
+
+# Call class Queue, instantiate an object and store it in variable "queue"
+queue = Queue([1, 2, 3])
+print(queue) # Print our queue.
+ # Call the function push() with the weakly private attribute in it. This would be normal operation.
+ # Pop the integer 4 into slot "0" in the list
+queue.push(4)
+print(queue) # print our queue again to show the new integer
+# Call the function pop() with the weakly private attribute in it. This would be normal operation.
+# It will remove the newly introduced integer from the list
+queue.pop()
+print(queue) # print the list again
+# We call the weakly private attribute directly from outside code. This is not advised, but see, it's working!  
+print(queue._hiddenlist) 
+
+# There is a higher level of discouraging as well, a convention for strongly private methods and attributes.
+# This is done with a double underscore at the beginning of their names.
+# This cause the names to be mangled, which means that they can't be accessed from outside the class.
+# The purpose is not to ensure that they are kept private, but to avoid bugs if there are subclasses that have
+# methods or attributes with the same names.
+# Name mangled methods can still be accessed externally, but by a different name. For this, we use "<class_name>__stronglyprivatemethod"
+# Bascially, the mangling that's happening in the background is that Python adds the class name in front of the strongly private method/attribute!
+
+class Spam:
+    # Strongly private attribute __egg = 7.
+    __egg = 7
+    # Definition of function "print_egg()"
+    def print_egg(self):
+        # Print the instantiated object's __egg attribute.
+        print(self.__egg)
+
+# Instantiate an object from the class Spam, store it in variable "s"
+s = Spam()
+# Call the function print_egg() to print the __egg attribute of "s"
+s.print_egg()
+# We use the special syntax "<class_name>__stronglyprivatemthod" to print the storngly private attribute __egg
+# I've commented this out because pythonlint in vscode does not like it one bit!
+#print("The strongly private attribute of __egg is:", s._Spam__egg)
+# Attempt to print the strongly private attribute __egg. This fails with Attribute Error. Why? Because the mangling changes the name for external code, to Spam__egg!
+try:
+    print(s.__egg)
+except AttributeError:
+    print ("We could not print this attribute. (We know it's stringly private, that's why)")
