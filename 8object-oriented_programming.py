@@ -308,8 +308,8 @@ print(queue._hiddenlist)
 # This cause the names to be mangled, which means that they can't be accessed from outside the class.
 # The purpose is not to ensure that they are kept private, but to avoid bugs if there are subclasses that have
 # methods or attributes with the same names.
-# Name mangled methods can still be accessed externally, but by a different name. For this, we use "<class_name>__stronglyprivatemethod"
-# Bascially, the mangling that's happening in the background is that Python adds the class name in front of the strongly private method/attribute!
+# Name mangled methods can still be accessed externally, but by a different name. For this, we use "_<class_name>__stronglyprivatemethod"
+# Bascially, the mangling that's happening in the background is that Python adds _<class_name> in front of the strongly private method/attribute!
 
 class Spam:
     # Strongly private attribute __egg = 7.
@@ -323,11 +323,139 @@ class Spam:
 s = Spam()
 # Call the function print_egg() to print the __egg attribute of "s"
 s.print_egg()
-# We use the special syntax "<class_name>__stronglyprivatemthod" to print the storngly private attribute __egg
+# We use the special syntax "_<class_name>__stronglyprivatemthod" to print the storngly private attribute __egg
 # I've commented this out because pythonlint in vscode does not like it one bit!
 #print("The strongly private attribute of __egg is:", s._Spam__egg)
-# Attempt to print the strongly private attribute __egg. This fails with Attribute Error. Why? Because the mangling changes the name for external code, to Spam__egg!
+# Attempt to print the strongly private attribute __egg. This fails with Attribute Error. Why? Because the mangling changes the name for external code, to _Spam__egg!
 try:
     print(s.__egg)
 except AttributeError:
     print ("We could not print this attribute. (We know it's stringly private, that's why)")
+
+#########################################
+# Class Methods                         #
+#########################################
+
+# Methods of objects we've looked at so far are called by an instance of a class, which is then passed to the .self parameter of the method.
+# Class methods are different, they are called by a class, which is passed to the cls parameter of the method.
+
+class Rectangle:
+    def __init__(self, width, height):
+        self.width = width
+        self.height = height
+    
+    def calculate_area(self):
+        return self.width * self.height
+
+# To be able to use cls ("class self-variable") we need a decorator. The @classmethod is a decorator.
+# What's a decorator again? Have a look at 7Functional_Programming. We used it before to print stuff pretty.
+    @classmethod
+    # We define this type of method to make like simpler when calling for a new type of object that has specific requirements.
+    # For example, if we wanted to make a square and not a rectangle, we can call this classmethod directly and only have to type one argument.
+    # May not be a big deal, but this can of course grow more complex in other examples.
+    # This method takes ONE argument and passes on TWO arguments to the pre-defined class-constructor. It knows which class-constructor
+    # to pass these arguments to by the <Class_name>.method() calling of the instantiation.
+    # This is called a "Factory Method". 
+    def new_square(cls, side_length):
+        # Pass return values to the class-constructor Rectangle. Rectangle(5,5)
+        return cls(side_length, side_length)
+
+# Instantiate an object "square" of the class rectangle, width 2, height 6
+square = Rectangle(2,6)
+# Use the class method calculate_area() on square, this will print 12.
+print ("Our first rectangle has the area:", square.calculate_area())
+# Instantiate an object "square" of the class Rectangle on the classmethod "new_square()".
+# We only need to pass one parameter here, as the classmethod only takes one argument, the length of the side of the square.
+# We know the class-constructor is Rectangle, this is where the return arguments will be passed to.
+square = Rectangle.new_square(5)
+# The object is still of the class Rectangle and we can use the class method calculate_area() to calculate the area. This now turns into 5x5=25.
+print("Our square has the area:", square.calculate_area())
+
+#########################################
+# Static Methods                        #
+#########################################
+
+# Static methods are similar to class methods, except they don't receive any additional arguments. They are identical to normal functions that belong to a class.
+# They are marked with the staticmethod decorator.
+
+class Pizza:
+    def __init__(self, toppings):
+        self.toppings = toppings
+
+    # Definition of static method validate_topping(). Again, we need to use a decorator @ to be able to use this special method
+    # Noteworthy how this allows for this method to be used without creating an object of the constructor-class.
+    @staticmethod
+    def validate_topping(topping):
+        if topping == "pineapple":
+            raise ValueError("No pineapples!")
+        else:
+            return True
+    
+    #### Properties section ####
+    @property
+    def pineapple_allowed(self):
+        return False
+    
+    def meatballs_allowed(self):
+        return False
+    
+    #### Setter/Getter section ####
+    @pineapple_allowed.setter
+    def pineapple_allowed(self, value):
+        if value:
+            password = input("Enter the password:")
+            if password == "Sw0rdf1sh!":
+                self._pineapple_allowed = value
+            else:
+                raise ValueError("Alert! Intruder!")
+
+# Definition of list of ingredients
+ingredients = ["cheese", "onions", "spam"]
+# loop through all ingredients[] using the static method Pizza.validate_topping. If all are true, instantiate an object "pizza" of the class Pizza.
+if all(Pizza.validate_topping(i) for i in ingredients):
+    pizza = Pizza(ingredients)
+
+#########################################
+# Properties                            #
+#########################################
+
+# Properties provide a way of customising access to instance attributes.
+# They are created by putting the property decorator above a method. This means that when the instance attribute with the same name as the method is accessed,
+# the method will be called instead. The property decorator is making the function a read-only ATTRIBUTE. This will now be called without parenthesis as it's an attribute.
+# A common use of a property is to make an attribute read-only.
+
+# We call the attribute / property and print its value
+print("Is pineapple allowed on our pizza?", pizza.pineapple_allowed)
+# To check if a no-@property attribute can indeed be changed we created a meatballs_allowed and print it.
+# This print returns an object instead of a True/False statement.
+# This seems because we don't call the method with a parenthesis. If we do, it works but pylint complains.
+#  I guess that changed too with the Property decorator. The property returns False when using the same print statement.
+print("Are meatballs permitted?", pizza.meatballs_allowed)
+# We change the attribute to True, instead of false.
+pizza.meatballs_allowed = True
+# Print again, and indeed it worked.
+print("Are our meatballs now permitted?", pizza.meatballs_allowed)
+# We attempt to set the property attribute to false:
+try:
+    pizza.pineapple_allowed = True
+except AttributeError:
+    print ("Can't set attribute for a property, it's read-only")
+
+# Properties can also be set by defining setter/getter functions.
+# Normally you have:
+# User --> Attribute
+# User <-- Attribute
+#
+# Now with getter and setter we can have
+# User --> setter with pw protection --> Attribute
+# User <-- Getter <-- Attribute
+#
+# The setter function sets the corresponding property's value.
+# The getter gets the value.
+# To define a setter, you need to use a decorator of the same name as the property, followed by a dot and the setter keyword.
+# The same applies to defining getter functions.
+
+# We have password protected the setting of the property pineapple_allowed. If we type the right password, we are allowed to change the read-only value.
+# or at least that's what it did in the training software. In my code it does not.
+print(pizza.pineapple_allowed)
+
