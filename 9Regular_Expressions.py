@@ -23,7 +23,7 @@ else:
     print("No match")
 
 pattern = r"spam" # Set simple pattern just a raw string "spam"
-# re function search() checks if parameter 1 is found anywhere in parameter 2.
+# re function search() checks if parameter 1 is found anywhere in parameter 2. If true, re.search is True and we will print a sentence.
 if re.search(pattern, "rspammy rspammy rspammy"):
     print("re.search() found the string while searching in the whole matching string")
 if re.match(pattern, "rspammy rspammy rspammy"):
@@ -32,7 +32,37 @@ else:
     print("re.match() didn't find this string at the beginning of the matching string")
 # re function findall() puts all matches in a list
 print(re.findall(pattern, "rspammy rspammy rspammy"))
-iterable_object = re.finditer(pattern, "rspammy rspammy rspammy")
 
+# re function finditer() works just like findall() but puts the values in an iterable object rather than a list
+iterable_object = re.finditer(pattern, "rspammy rspammy rspammy")
 for line in iterable_object:
-    print(line) 
+    print(line)
+
+#########################
+# search()              #
+#########################
+
+# re.search() returns and object with several methods that give details about it.
+
+pattern = r"pam"
+matching_pattern = r"eggspamsausage"
+search_match = re.search(pattern, matching_pattern)
+if search_match:
+    print ("search object.group is the matched string: ", search_match.group())
+    print ("search object.start is the start position of the match: ", search_match.start())
+    print ("search object.end is the end position of the match: ",search_match.end())
+    print ("search object.span is the end and start position of the match in a tuple: ",search_match.span())
+
+#########################
+# sub()                 #
+#########################
+
+# One of the most important re methods that use regular expressions is sub().
+# This method replaces all occurrences of the pattern in string with "repl", substituting all occurrences, unless "max" is provided.
+# The method returns the modified string.
+# Example: re.sub(<search_pattern>, <replacement_string>, <string_to_look_through>, <amount of times to replace, 0 = all>)
+
+str = "My name is Par, Hi Par."
+search_pattern = r"Par"
+newstr = re.sub(search_pattern, "David", str, 1)
+print (newstr)
