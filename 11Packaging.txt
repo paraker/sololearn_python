@@ -1,0 +1,54 @@
+##################################################
+# Packaging                                      #
+##################################################
+
+# Further explanations at:
+https://docs.python.org/3/distutils/builtdist.html
+
+# In Python the term packaging refers to putting modules you have written in a standard format, so that other programmers can install and use them with ease.
+# This involves use of the modules "setuptools" and "distutils".
+# For packaging you need to organise your files in a tree structure with some mandatory files, like this:
+
+SoloLearn/ # Main directory
+    LICENSE.txt # license file
+    README.txt # instructions
+    setup.py # assembly instructions file
+    sololearn/ # Directory for scripts
+        __init__.py # This file can be blank but it must exist
+        sololearn.py # script file number 1
+        sololearn2.py # script file number 2 etc etc..
+
+# setup.py:
+from distutils.core import setup
+setup (
+    name='Package_Directory_Name',
+    version='0.1dev',
+    packages=['package_subdirectory_name',],
+    license='MIT', # Assume just a text field for whoever you want
+    long_description=open('README.txt').read(),
+)
+
+# To build a windows 64-bit distribution package, execute this command in your prompt: 
+python setup.py build --plat-name=win-amd64 bdist_wininst
+
+# Result should be:
+par@XPS13 MINGW64 ~/workspace/sololearn_python/Package (master)
+$ python setup.py build --plat-name=win-amd64 bdist_wininst
+running build
+running build_py
+running bdist_wininst
+installing to build\bdist.win-amd64\wininst
+running install_lib
+creating build\bdist.win-amd64
+creating build\bdist.win-amd64\wininst
+creating build\bdist.win-amd64\wininst\PURELIB
+creating build\bdist.win-amd64\wininst\PURELIB\sololearn
+copying build\lib\sololearn\sololearn.py -> build\bdist.win-amd64\wininst\PURELIB\sololearn
+copying build\lib\sololearn\__init__.py -> build\bdist.win-amd64\wininst\PURELIB\sololearn
+running install_egg_info
+Writing build\bdist.win-amd64\wininst\PURELIB\Package-0.1dev-py3.6.egg-info
+creating 'C:\Users\par\AppData\Local\Temp\tmphbpne8jh.zip' and adding '.' to it
+adding 'PURELIB\Package-0.1dev-py3.6.egg-info'
+adding 'PURELIB\sololearn\sololearn.py'
+adding 'PURELIB\sololearn\__init__.py'
+removing 'build\bdist.win-amd64\wininst' (and everything under it)
