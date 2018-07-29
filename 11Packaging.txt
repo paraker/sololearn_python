@@ -28,6 +28,10 @@ setup (
     long_description=open('README.txt').read(),
 )
 
+##################################################
+# For Windows based devs with python installed   #
+##################################################
+
 # To build a windows 64-bit distribution package, execute this command in your prompt: 
 python setup.py build --plat-name=win-amd64 bdist_wininst
 
@@ -52,3 +56,46 @@ adding 'PURELIB\Package-0.1dev-py3.6.egg-info'
 adding 'PURELIB\sololearn\sololearn.py'
 adding 'PURELIB\sololearn\__init__.py'
 removing 'build\bdist.win-amd64\wininst' (and everything under it)
+
+##################################################
+# For PyPI                                       #
+##################################################
+
+# You can also create packages to distribute via PyPI, which is called a source distribution
+# However, this method may use un-encrypted methods to upload your code, so your account can be stolen if someone sniffs the traffic.
+# There seemed to be other ways to upload packages properly.
+python setup.py register
+python setup.py sdist
+
+##################################################
+# For normal users on Windows                    #
+##################################################
+
+# If you're not a dev on windows it's unlikely that you have python installed on your machine.
+# As such you can't run the dev packages.
+# For such users you can convery your code into executables with special tools.
+
+# py2exe can be used to package a python script along with all the libraries it requires into a single executable.
+
+# PyInstaller and cx_Freeze serve the same purpose.
+
+##################################################
+# For normal users on Mac                        #
+##################################################
+
+# For Mac users you can use py2app, PyInstaller or cx_Freeze
+
+##################################################
+# cx_Freeze                                      #
+##################################################
+cx_Freeze executables should work on any platform where python can run.
+
+# Install cx_Freeze
+python -m pip install cx_Freeze --upgrade
+
+# Assuming you have a script called hello.py which you want to turn into an executable, this can be accomplished by this command:
+cxfreeze hello.py --target-dir dist
+
+# If you want a Windows msi 
+cxfreeze hello.py --target-dir dist bdist_msi
+

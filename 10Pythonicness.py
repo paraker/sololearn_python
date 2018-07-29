@@ -157,3 +157,17 @@ if __name__ == "__main__":
 import sololearn as sololearn
 sololearn.module_function()
 
+##################################################
+# Major 3rd Party Libraries                      #
+##################################################
+
+# The Python standard library alone contains extensive functionality.
+# However, some tasks require 3rd party libraries. Some major 3rd party libraries are:
+# Django - The most frequently used web framework written in Python. Django powers websites that include instragram and Disqus. Heaps of functionality and extension packs.
+
+# CherryPy and Flask are also very popular web frameworks.
+# For scraping data from websites, the library BeautifulSoup is very useful, and leads to better results than building your own scraper with regular expressions.
+
+# matplotlib allows you to create graphs based on data in python.
+# NumPynallows for use of multidimensional arrays that are much faster than native python solution of nested lists
+
