@@ -189,3 +189,22 @@ if match:
 match = re.search(search_pattern, str2)
 if match:
     print(match.group())
+
+#########################
+# Lookbehind            #
+#########################
+
+# https://docs.python.org/3/library/re.html
+# Matches if the current position in the string is preceded by a match for ... 
+# that ends at the current position. This is called a positive lookbehind assertion.
+# (?<=abc)def will find a match in 'abcdef',
+# since the lookbehind will back up 3 characters and check if the contained pattern matches.
+
+m = re.search('(?<=abc)def', 'abcdef')
+m.group(0)
+
+# This example looks for a word following a hyphen:
+
+m = re.search(r'(?<=-)\w+', 'spam-egg')
+m.group(0)
+'egg'
